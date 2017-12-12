@@ -1,5 +1,5 @@
 TRAINING_PARAMS = dict(
-    NORMALIZE_METHOD = "MINMAX", #"ZSCORE",            # How features should be normalized
+    NORMALIZE_METHOD = "MINMAX",            # How features should be normalized
     DESIRED_NUM_INSTANCES = 100000,         # Specify max number of instances (None uses all instances)
     SPLIT_METHOD = "70/30",                 # One of "70/30" or "KFOLD"
     NUM_SPLITS = 10,                        # K in K fold cross validation
@@ -15,6 +15,10 @@ TRAINING_PARAMS = dict(
 # Specify a list of features using the FEATURES field,
 # If these features are to be ommited then set OMIT_FEATURES to True
 # If they are to be the features used for the inputs, set OMIT_FEATURES to False
+
+# Available Features
+# "fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides",
+# "free sulfur dioxide", "total sulfur dioxide", "density", "pH", "sulphates", "alcohol", "quality"
 
 # White Wine Dataset
 WHITE_WINE = dict(
