@@ -18,8 +18,9 @@ def printM(dataset):
 
 
 # Read's data from CSV File
-def readData():
-    csvData = np.recfromcsv(ACTIVE_DATASET['FILE_NAME'], delimiter=ACTIVE_DATASET['DELIMETER'], filling_values=np.nan, case_sensitive=True, deletechars='', replace_space=' ') 
+def readData(filename=ACTIVE_DATASET['FILE_NAME']):
+    csvData = np.recfromcsv(filename, delimiter=ACTIVE_DATASET['DELIMETER'], filling_values=np.nan, case_sensitive=True, deletechars='', replace_space=' ') 
+    
     if(TRAINING_PARAMS['DESIRED_NUM_INSTANCES']):
         numInstances = min(TRAINING_PARAMS['DESIRED_NUM_INSTANCES'], len(csvData))
     else:
