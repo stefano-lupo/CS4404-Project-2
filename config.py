@@ -1,7 +1,7 @@
 TRAINING_PARAMS = dict(
     NORMALIZE_METHOD = "MINMAX", #"ZSCORE",            # How features should be normalized
     DESIRED_NUM_INSTANCES = 100000,         # Specify max number of instances (None uses all instances)
-    SPLIT_METHOD = "70/30",                 # One of "70/30" or "KFOLD"
+    SPLIT_METHOD = "KFOLD",                 # One of "70/30" or "KFOLD"
     NUM_SPLITS = 10,                        # K in K fold cross validation
     LEARNING_RATE = 0.1,                    # Stepsize for gradient descent
     TRAINING_EPOCHS = 100,                  # Number of iterations of gradient descent training
@@ -20,6 +20,7 @@ TRAINING_PARAMS = dict(
 WHITE_WINE = dict(
     FILE_NAME = "winequality-white.csv",
     DELIMETER = ";",
+    MAX_CHUNK = 4500,
     FEATURES = ["quality"],
     OMIT_FEATURES = True,
     LABEL = "quality"

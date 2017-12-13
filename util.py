@@ -6,6 +6,17 @@ from sklearn.preprocessing import scale
 # Load data from config file (see config.py)
 from config import TRAINING_PARAMS, ACTIVE_DATASET
 
+#Takes in a size and returns the first instances up until that size
+def divideDataChunks(x, y, size):
+    if size >= ACTIVE_DATASET['MAX_CHUNK']:
+        a = np.array([None, None])
+        b = np.array([None, None])
+        return a,b
+    else:
+        newX = x[:size:,:]
+        newY = y[:size:,:]
+    return newX, newY
+
 
 # Prints Matrices in a nicer way
 def printM(dataset):
@@ -25,6 +36,31 @@ def readData():
 # Finds the column numbers of the features to be included in the design matrix X
 def getDesiredFeatureIndices(allFeatureNames, features, omitFeatures):
     return [i for i, x in enumerate(allFeatureNames) if ((x in features and not omitFeatures) or (x not in features and omitFeatures))]
+
+#Calculates the confusion matrix and then returns the value for precision
+def calculatePrecision(xtest, ytest, yPrediction):
+    truePositives = 0
+    falsePositives = 0
+    trueNegatives = 0
+    falseNegatives = 0
+
+    for i in range(len(xtest)):
+        if (yPrediction[i] == 0) and (ytest[i] == 0):
+            trueNegatives += 1
+        elif (yPrediction[i] == 0) and (ytest[i] == 1):
+            falseNegatives += 1
+        elif (yPrediction[i] == 1) and (ytest[i] == 1):
+            truePositives += 1
+        elif (yPrediction[i] == 1) and (ytest[i] == 0):
+            falsePositives += 1
+
+    #print("TP: ",truePositives)
+    #print("TN: ",trueNegatives)
+    #print("FP: ",falsePositives)
+    #print("FN: ",falseNegatives)
+    #print("_____________")
+    #Return Precision
+    return truePositives/ (truePositives + falsePositives)
 
 
 # Builds the design matrix X inlcuding a column vector of 1s for the bias terms
@@ -90,7 +126,7 @@ def featureNormalize(dataset):
         return (dataset-mu)/sigma
 
 # Creates a binary classification from a multi classification
-def multiclassToBinaryClass(labelVector, threshold):
+def multiclassToBinary(labelVector, threshold):
     for i, label in enumerate(labelVector):
         if (label <= threshold):
             labelVector[i][0] = 0
