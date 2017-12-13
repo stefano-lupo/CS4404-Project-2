@@ -143,16 +143,22 @@ print("Average Accuracy: ", averageAcc, "\n\n")
 
 changeToTestData()
 testData = readData()
-print(data[1])
-print(testData[1])
-x = createDesignMatrix(testData)
-y = createLabelVector(testData)
+X = createDesignMatrix(data)
+X = featureNormalize(X)
+
+y = createLabelVector(data)
+y = np.squeeze(np.asarray(y))
 
 #yPrediction = clf.predict(x)
-accuracy = clf.score(x,y)
+accuracy = logreg.score(X, y)
 print("\n\n___________________________")
-print("Accuracy of test set:", accuracy)
+print("\nAccuracy of test set:", accuracy)
 print("___________________________")
+
+yPrediction = logreg.predict(X)
+
+#for i in range(len(y)):
+#   print("[", y[i],",",yPrediction[i], "]")
 
 # plt.hist([testClasses, trainClasses, yPrediction], bins=range(3, 11), align='left', rwidth=0.5,
         # label=["actual", "sampled", "prediction"])
