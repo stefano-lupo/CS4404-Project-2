@@ -88,33 +88,40 @@ X = featureNormalize(X)
 y = createLabelVector(data)
 y = np.squeeze(np.asarray(y))
 print(X.shape)
+print(y.shape)
 
 xTrain, yTrain, xTest, yTest = splitData7030(X, y)
 print(xTrain.shape)
 print(yTrain.shape)
 
+from keras.utils import to_categorical
+yTrain = to_categorical(yTrain, num_classes=10)
+yTest = to_categorical(yTest, num_classes=10)
+print("After binary encoding y: ")
+print(yTrain.shape)
+print(yTest.shape)
+
 
 model = Sequential()
-model.add(Dense(128, activation='relu', input_dim=xTrain.shape[1]))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='softmax'))
-model.add(Dense(1))
+model.add(Dense(256, activation='relu', input_dim=xTrain.shape[1]))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(64, activation='softmax'))
+model.add(Dense(10, activation='softmax'))
 
-model.compile(optimizer='rmsprop',
-              loss='mse',
-              metrics=['accuracy'])
+# model.compile(optimizer='rmsprop', loss='mse', metrics=['accuracy'])
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
 model.summary()
 
 pltCallBack = PlotLossAccuracy()
 
-model.fit(xTrain, yTrain, validation_data=(xTest, yTest), epochs=50, callbacks=[pltCallBack])
+model.fit(xTrain, yTrain, validation_data=(xTest, yTest), epochs=200, batch_size=10, callbacks=[pltCallBack])
 
 pltCallBack.show_plots()
 
 predictions = model.predict(xTest)
 print("Predicter: ")
-print(predictions, "\n")
+print(predictions[0], "\n")
 
 print("Actual: ")
 print(yTest, "\n")
