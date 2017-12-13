@@ -15,6 +15,7 @@ from util import (
     splitUpDataCrossVal,
     featureNormalize,
     multiclassToBinaryClass,
+    changeToTestData,
     ACTIVE_DATASET,
     TRAINING_PARAMS
 )
@@ -127,10 +128,7 @@ if TRAINING_PARAMS['SPLIT_METHOD'] == "KFOLD":
         currentAcc, yPrediction = trainModel(trainPoints, trainClasses, testPoints, testClasses, logreg)
         acc.append(currentAcc)
 
-        # plt.hist([testClasses, trainClasses, yPrediction], bins=range(3, 11), align='left', rwidth=0.5,
-        # label=["actual", "sampled", "prediction"])
-        # plt.legend(loc='upper right')
-        # plt.show()
+        
 
 
     averageAcc = np.mean(acc)
@@ -141,5 +139,24 @@ else:
     trainPoints, trainClasses, testPoints, testClasses = splitAndOverSample(X, y)
     averageAcc, yPrediction = trainModel(trainPoints, trainClasses, testPoints, testClasses, logreg)
 
-print(averageAcc)
+print("Average Accuracy: ", averageAcc, "\n\n")
+
+changeToTestData()
+testData = readData()
+print(data[1])
+print(testData[1])
+x = createDesignMatrix(testData)
+y = createLabelVector(testData)
+
+#yPrediction = clf.predict(x)
+accuracy = clf.score(x,y)
+print("\n\n___________________________")
+print("Accuracy of test set:", accuracy)
+print("___________________________")
+
+# plt.hist([testClasses, trainClasses, yPrediction], bins=range(3, 11), align='left', rwidth=0.5,
+        # label=["actual", "sampled", "prediction"])
+        # plt.legend(loc='upper right')
+        # plt.show()
+
 

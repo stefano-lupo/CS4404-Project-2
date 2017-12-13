@@ -21,6 +21,9 @@ def readData():
         numInstances = len(csvData)
     return csvData[:numInstances]
 
+def changeToTestData():
+    ACTIVE_DATASET['FILE_NAME'] = "testData.csv"
+
 
 # Finds the column numbers of the features to be included in the design matrix X
 def getDesiredFeatureIndices(allFeatureNames, features, omitFeatures):
