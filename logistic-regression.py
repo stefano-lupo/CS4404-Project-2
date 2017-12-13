@@ -20,12 +20,11 @@ from util import (
 )
 
 
-def trainModel(xtrain, ytrain, xtest, ytest):
+def trainModel(xtrain, ytrain, xtest, ytest, logreg):
     ## interesting options:
     # class_weight="balanced",
     # multi_class="multinomial", solver=‘newton-cg’ or ‘sag’ or ‘saga’ or ‘lbfgs’
     # c=<some_float> higher for less regularization
-    logreg = linear_model.LogisticRegression(multi_class="multinomial", solver="lbfgs")
     logreg.fit(xtrain, ytrain)
 
     # Predict the test values
@@ -38,6 +37,9 @@ def trainModel(xtrain, ytrain, xtest, ytest):
     # Get the accuracy of the predictions
     accuracy = logreg.score(xtest, ytest)
     return accuracy, yPrediction
+
+    #Get the recall
+    
 
 
 def getNumSamplesFromPercent(n, percentages):
@@ -68,8 +70,8 @@ def splitAndOverSample(X, y, numDataSplits=None, crossValIndex=None):
         if TRAINING_PARAMS['BALANCE_SAMPLING'] == 'OVER':
 
             # Define oversampling amounts
-            ratioDict = {3: max(20, counts[3]), 4: max(150, counts[4]), 5: counts[5],
-                         6: counts[6], 7: counts[7], 8: max(150, counts[8]), 9: max(20, counts[9])}
+            ratioDict = {3: max(50, counts[3]), 4: max(200, counts[4]), 5: counts[5],
+                         6: counts[6], 7: counts[7], 8: max(200, counts[8]), 9: max(50, counts[9])}
 
             # Oversample the training data
             trainPointsOS, trainClassesOS = RandomOverSampler(random_state=0, ratio=ratioDict).fit_sample(trainPoints, trainClasses)
@@ -98,6 +100,8 @@ def splitAndOverSample(X, y, numDataSplits=None, crossValIndex=None):
 
             return trainPointsUS, trainClassesUS, testPoints, testClasses
 
+        
+
 
 data = readData()
 X = createDesignMatrix(data)
@@ -107,6 +111,7 @@ y = createLabelVector(data)
 y = np.squeeze(np.asarray(y))
 print(X.shape)
 
+logreg = linear_model.LogisticRegression(penalty="l1", multi_class="ovr", solver="saga")
 
 if TRAINING_PARAMS['SPLIT_METHOD'] == "KFOLD":
     acc = []
@@ -119,18 +124,22 @@ if TRAINING_PARAMS['SPLIT_METHOD'] == "KFOLD":
             = splitAndOverSample(X, y, numDataSplits=numDataSplits, crossValIndex=i)
 
         # Train the model
-        currentAcc, yPrediction = trainModel(trainPoints, trainClasses, testPoints, testClasses)
+        currentAcc, yPrediction = trainModel(trainPoints, trainClasses, testPoints, testClasses, logreg)
         acc.append(currentAcc)
 
+        # plt.hist([testClasses, trainClasses, yPrediction], bins=range(3, 11), align='left', rwidth=0.5,
+        # label=["actual", "sampled", "prediction"])
+        # plt.legend(loc='upper right')
+        # plt.show()
+
+
     averageAcc = np.mean(acc)
+
 
 else:
     print("70/30 method used for splitting")
     trainPoints, trainClasses, testPoints, testClasses = splitAndOverSample(X, y)
-    averageAcc, yPrediction = trainModel(trainPoints, trainClasses, testPoints, testClasses)
+    averageAcc, yPrediction = trainModel(trainPoints, trainClasses, testPoints, testClasses, logreg)
 
 print(averageAcc)
-plt.hist([testClasses, trainClasses, yPrediction], bins=range(3, 11), align='left', rwidth=0.5,
-         label=["actual", "sampled", "prediction"])
-plt.legend(loc='upper right')
-plt.show()
+
