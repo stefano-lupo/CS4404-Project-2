@@ -8,7 +8,7 @@ TRAINING_PARAMS = dict(
     
     IS_KNN_LABEL_STRING = False,            # If predicted string categorical data, set to True
     KNN_CLASS_THRESHOLD = None,             # The accepted deviation from true y value for numeric classification                                # Can be None for exact classification
-    K = 2                                   # Number of nearest neighbours to use
+    K = 5                                   # Number of nearest neighbours to use
 )
 
 
