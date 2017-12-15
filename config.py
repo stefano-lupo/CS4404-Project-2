@@ -3,14 +3,11 @@ TRAINING_PARAMS = dict(
     DESIRED_NUM_INSTANCES = 100000,         # Specify max number of instances (None uses all instances)
     SPLIT_METHOD = "70/30",                 # One of "70/30" or "KFOLD"
     NUM_SPLITS = 10,                        # K in K fold cross validation
-    LEARNING_RATE = 0.1,                    # Stepsize for gradient descent
-    TRAINING_EPOCHS = 100,                  # Number of iterations of gradient descent training
-    BALANCE_SAMPLING = None,
-    IS_KNN_LABEL_STRING = False,            # If predicted string categorical data, set to True
-    KNN_CLASS_THRESHOLD = None,             # The accepted deviation from true y value for numeric classification                                # Can be None for exact classification
-    K = 2                                   # Number of nearest neighbours to use
+    OVER_SAMPLE = True,                     # Whether or not to oversample
+    USE_OS_DICT = True                     # Whether or not to use the oversample amount dict or even
 )
 
+SHOW_PLOTS = False
 
 # Specify a list of features using the FEATURES field,
 # If these features are to be ommited then set OMIT_FEATURES to True
@@ -39,7 +36,7 @@ WHITE_WINE_OPT = dict(
     LABEL = "quality"
 )
 
-
+# Wine dataset without test data removed
 WHITE_WINE_FULL = dict(
     FILE_NAME = "winequality-white-full.csv",
     DELIMETER = ";",
@@ -48,15 +45,10 @@ WHITE_WINE_FULL = dict(
     LABEL = "quality"
 )
 
-###########################################
-####                 KNN            #######
-###########################################
-WHITE_WINE_KNN = dict(WHITE_WINE)
-
 
 # Select the dataset to be used by the algorithm
 # Be sure to sure to use the <>_KNN datasets when using K nearest neighbours 
 # then simply run `python <algorithm-script.py>` to get the results.
-ACTIVE_DATASET = WHITE_WINE_FULL
+ACTIVE_DATASET = WHITE_WINE
 
 

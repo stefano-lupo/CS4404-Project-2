@@ -8,8 +8,14 @@ import matplotlib.pyplot as plt
 from pandas import *
 from sklearn.preprocessing import scale
 
+
+from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
+from imblearn.under_sampling import RandomUnderSampler, ClusterCentroids
+
+from collections import Counter
+
 # Load data from config file (see config.py)
-from config import TRAINING_PARAMS, ACTIVE_DATASET
+from config import TRAINING_PARAMS, ACTIVE_DATASET, SHOW_PLOTS
 
 
 # Prints Matrices in a nicer way
@@ -103,3 +109,59 @@ def multiclassToBinaryClass(labelVector, threshold):
         else:
             labelVector[i][0] = 1
     return labelVector
+
+# Over sample the minority classes
+# NOTE: SHOULD OVERSAMPLE AFTER SPLITTING DATA NOT BEFORE
+# OTHERWISE JUST LEARNING THE VALIDATION SET TOO
+def splitAndOverSample(X, y, numDataSplits=None, crossValIndex=None):
+
+    # Split the data
+    if numDataSplits:
+      xTrain, yTrain, xVal, yVal = splitUpDataCrossVal(X, y, numDataSplits, crossValIndex)
+    else:
+      xTrain, yTrain, xVal, yVal = splitData7030(X, y)
+
+    # Sample the Data
+    if TRAINING_PARAMS['OVER_SAMPLE']:
+        counts = Counter(yTrain)
+        if(TRAINING_PARAMS['USE_OS_DICT']):
+            print("Using OS Dict")
+            # Define oversampling amounts
+            ratioDict = {3: max(50, counts[3]), 4: max(200, counts[4]), 5: counts[5],
+                            6: counts[6], 7: counts[7], 8: max(200, counts[8]), 9: max(50, counts[9])}
+
+            # Oversample the training data
+            xTrainOS, yTrainOS = RandomOverSampler(random_state=0, ratio=ratioDict).fit_sample(xTrain, yTrain)
+            print('Oversampling')
+            print('Rating distribution: ', sorted(Counter(yTrainOS).items()))
+            
+
+            if SHOW_PLOTS:
+                # Show distribution of classes after over sampling
+                plt.hist([yTrain, yTrainOS], bins=range(3, 11), align='left', rwidth=0.5, label=['No Oversampling', 'Oversampling'])
+                plt.legend()
+                plt.show()
+
+            return xTrainOS, yTrainOS, xVal, yVal
+        
+        else:
+            
+            print("Not using OS Dict")
+
+            # Oversample the training data
+            xTrainOS, yTrainOS = RandomOverSampler(random_state=0).fit_sample(xTrain, yTrain)
+            print('Oversampling')
+            print('Rating distribution: ', sorted(Counter(yTrainOS).items()))
+            
+
+            if SHOW_PLOTS:
+                # Show distribution of classes after over sampling
+                plt.hist([yTrain, yTrainOS], bins=range(3, 11), align='left', rwidth=0.5, label=['No Oversampling', 'Oversampling'])
+                plt.legend()
+                plt.show()
+
+            return xTrainOS, yTrainOS, xVal, yVal
+    
+    # No Oversampling
+    else:
+      return xTrain, yTrain, xVal, yVal
