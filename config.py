@@ -4,7 +4,7 @@ TRAINING_PARAMS = dict(
     SPLIT_METHOD = "70/30",                 # One of "70/30" or "KFOLD"
     NUM_SPLITS = 10,                        # K in K fold cross validation
     OVER_SAMPLE = True,                     # Whether or not to oversample
-    USE_OS_DICT = True                     # Whether or not to use the oversample amount dict or even
+    USE_OS_DICT = False                     # Whether or not to use the oversample amount dict or even
 )
 
 SHOW_PLOTS = False

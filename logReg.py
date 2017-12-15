@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
-
 from collections import Counter
 
 import numpy as np
@@ -35,33 +29,24 @@ from util import (
 NUM_CLASSES = 10
 showPlots = False
 
-
+# Create Datastructures
 data = readData()
 X = createDesignMatrix(data)
 # X = featureNormalize(X)
 
 y = createLabelVector(data)
 y = np.squeeze(np.asarray(y))
-# y = np.array([1 if x>7 else 0 for x in y]);
 
-
-
+# Hyperparameter options
 parameter_candidates_log_reg = [
-  {'C': [1, 10, 100, 500]}
+  {'C': [1, 10, 100, 500] }
 ]
 
-
+# Create Data structure for results
 learning = True
 learnedVsDefault = {'learned': dict(), 'default': dict()}
 
-
-
-
-
-
-# In[2]:
-
-
+# Compare Learned and defaultmodels
 for i in range(2):
 
   accuracies = []
@@ -76,14 +61,6 @@ for i in range(2):
       xTrain, yTrain, xVal, yVal = splitAndOverSample(X, y)
     else:
       xTrain, yTrain, xVal, yVal = splitAndOverSample(X, y, k, i)
-
-    # print("xTrain: ", xTrain.shape)
-    # print("yTrain: ", yTrain.shape)
-    # print("xVal: ", xVal.shape)
-    # print("yVal: ", yVal.shape)
-
-    # Choose optimum model on trainig data
-
     if(learning):
       print("Learning Model")
       clf = GridSearchCV(estimator=linear_model.LogisticRegression(random_state=0), param_grid=parameter_candidates_log_reg, n_jobs=-1, scoring="f1_macro")
@@ -97,11 +74,6 @@ for i in range(2):
 
     # Predict the validation values
     yPred = clf.predict(xVal)
-
-    # PLot the values
-#     plt.hist([yPred, yVal], align='left', rwidth=0.5, label=['Predicted', 'Actual'])
-#     plt.legend()
-    # plt.show()
 
     # Compute metrics
     accuracy = accuracy_score(yVal, yPred)
@@ -127,11 +99,7 @@ for i in range(2):
     learnedVsDefault['default'] = {'micro': micro, 'macro': macro, 'accuracies': accuracies, 'kappas': kappas}
     learning = True
 
-
-
-# In[3]:
-
-
+# Display Results
 for x in range(2):
     if(learning):
         key = 'learned'
@@ -144,42 +112,38 @@ for x in range(2):
     kappas = learnedVsDefault[key]['kappas']
     macro = learnedVsDefault[key]['macro']
     micro = learnedVsDefault[key]['micro']
-
-    print("\n\nLearning = ", not learning)
-    print("Average kappa: ", np.mean(kappas))
-    print("Average accuracy: ", np.mean(accuracies))
-
+    
     print("\nMacro")
     for key, value in macro.items():
-        print(key, " ", np.mean(value))
+        print(key, " ", np.mean(value), "+/-", 2*np.std(value))
 
-    print("Micro")
+    print("\nMicro")
     for key, value in micro.items():
-        print(key, " ", np.mean(value))
+        print(key, " ", np.mean(value), "+/-", 2*np.std(value))
 
     print("\n")
-
-
-# In[66]:
 
 
 learned = learnedVsDefault['learned']
 default = learnedVsDefault['default']
 
-
-
+# Create Array of averages for each metric
 learnedMetrics = [np.mean(learned['accuracies']), np.mean(learned['kappas'])]
 for (key, val) in learned['macro'].items():
     learnedMetrics.append(np.mean((val)))
 
 print(learnedMetrics)
 
+# Create Array of averages for each metric
 defaultMetrics = [np.mean(default['accuracies']), np.mean(default['kappas'])]
 for (key, val) in default['macro'].items():
     defaultMetrics.append(np.mean(val))
     
 print(defaultMetrics)
 
+# Plot the results
+font = {'family' : 'normal','size'   : 22}
+plt.rc('font', **font)
 
 plt.xticks([1,2,3,4,5], ['Accuracy', 'Kappa', 'F1', 'Precision', 'Recall'])
 plt.xlabel('Metric')
@@ -188,7 +152,3 @@ plt.bar([1, 2, 3, 4, 5], learnedMetrics, label="Learned", alpha=1)
 plt.bar([1, 2, 3, 4, 5], defaultMetrics, label="Default", alpha=1)
 plt.legend()
 plt.show()
-
-
-
-
