@@ -1,3 +1,9 @@
+
+# coding: utf-8
+
+# In[1]:
+
+
 from collections import Counter
 
 import numpy as np
@@ -41,12 +47,19 @@ y = np.squeeze(np.asarray(y))
 
 
 parameter_candidates_log_reg = [
-  {'C': [1, 10, 100, 1000]}
+  {'C': [1, 10, 100, 500]}
 ]
 
 
 learning = True
 learnedVsDefault = {'learned': dict(), 'default': dict()}
+
+
+
+
+
+
+# In[2]:
 
 
 for i in range(2):
@@ -86,8 +99,8 @@ for i in range(2):
     yPred = clf.predict(xVal)
 
     # PLot the values
-    plt.hist([yPred, yVal], align='left', rwidth=0.5, label=['Predicted', 'Actual'])
-    plt.legend()
+#     plt.hist([yPred, yVal], align='left', rwidth=0.5, label=['Predicted', 'Actual'])
+#     plt.legend()
     # plt.show()
 
     # Compute metrics
@@ -114,31 +127,68 @@ for i in range(2):
     learnedVsDefault['default'] = {'micro': micro, 'macro': macro, 'accuracies': accuracies, 'kappas': kappas}
     learning = True
 
+
+
+# In[3]:
+
+
 for x in range(2):
-  if(learning):
-    key = 'learned'
-    learning = False
-  else:
-    key = 'default'
-    learning = True
+    if(learning):
+        key = 'learned'
+        learning = False
+    else:
+        key = 'default'
+        learning = True
 
-  accuracies = learnedVsDefault[key]['accuracies']
-  kappas = learnedVsDefault[key]['kappas']
-  macro = learnedVsDefault[key]['macro']
-  micro = learnedVsDefault[key]['micro']
+    accuracies = learnedVsDefault[key]['accuracies']
+    kappas = learnedVsDefault[key]['kappas']
+    macro = learnedVsDefault[key]['macro']
+    micro = learnedVsDefault[key]['micro']
 
-  print("\n\nLearning = ", not learning)
-  print("Average kappa: ", np.mean(kappas))
-  print("Average accuracy: ", np.mean(accuracies))
-  
-  print("\nMacro")
-  for key, value in macro.items():
-    print(key, " ", np.mean(value))
+    print("\n\nLearning = ", not learning)
+    print("Average kappa: ", np.mean(kappas))
+    print("Average accuracy: ", np.mean(accuracies))
 
-  print("Micro")
-  for key, value in micro.items():
-    print(key, " ", np.mean(value))
+    print("\nMacro")
+    for key, value in macro.items():
+        print(key, " ", np.mean(value))
 
-  print("\n")
+    print("Micro")
+    for key, value in micro.items():
+        print(key, " ", np.mean(value))
+
+    print("\n")
+
+
+# In[66]:
+
+
+learned = learnedVsDefault['learned']
+default = learnedVsDefault['default']
+
+
+
+learnedMetrics = [np.mean(learned['accuracies']), np.mean(learned['kappas'])]
+for (key, val) in learned['macro'].items():
+    learnedMetrics.append(np.mean((val)))
+
+print(learnedMetrics)
+
+defaultMetrics = [np.mean(default['accuracies']), np.mean(default['kappas'])]
+for (key, val) in default['macro'].items():
+    defaultMetrics.append(np.mean(val))
+    
+print(defaultMetrics)
+
+
+plt.xticks([1,2,3,4,5], ['Accuracy', 'Kappa', 'F1', 'Precision', 'Recall'])
+plt.xlabel('Metric')
+plt.ylabel('Value')
+plt.bar([1, 2, 3, 4, 5], learnedMetrics, label="Learned", alpha=1)
+plt.bar([1, 2, 3, 4, 5], defaultMetrics, label="Default", alpha=1)
+plt.legend()
+plt.show()
+
+
 
 
