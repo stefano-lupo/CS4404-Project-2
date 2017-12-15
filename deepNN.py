@@ -1,3 +1,9 @@
+
+# coding: utf-8
+
+# In[21]:
+
+
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
@@ -30,6 +36,10 @@ from plotCallback import (PlotLossAccuracy)
 
 NUM_CLASSES = 10
 
+
+# In[22]:
+
+
 # Over sample the minority classes
 # NOTE: SHOULD OVERSAMPLE AFTER SPLITTING DATA NOT BEFORE
 # OTHERWISE JUST LEARNING THE VALIDATION SET TOO
@@ -55,8 +65,8 @@ def splitAndOverSample(X, y, numDataSplits=None, crossValIndex=None):
         if TRAINING_PARAMS['BALANCE_SAMPLING'] == 'OVER':
 
             # Define oversampling amounts
-            ratioDict = {3: max(20, counts[3]), 4: max(70, counts[4]), 5: counts[5],
-                         6: counts[6], 7: counts[7], 8: max(70, counts[8]), 9: max(20, counts[9])}
+            ratioDict = {3: max(20, counts[3]), 4: max(80, counts[4]), 5: counts[5],
+                         6: counts[6], 7: counts[7], 8: max(80, counts[8]), 9: max(20, counts[9])}
 
             # Oversample the training data
             xTrainOS, yTrainOS = RandomOverSampler(random_state=0, ratio=ratioDict).fit_sample(xTrain, yTrain)
@@ -98,6 +108,9 @@ def splitAndOverSample(X, y, numDataSplits=None, crossValIndex=None):
             return xTrainUS, yTrainUS, xVal, yVal
 
 
+# In[23]:
+
+
 
 data = readData()
 X = createDesignMatrix(data)
@@ -108,17 +121,42 @@ y = np.squeeze(np.asarray(y))
 print("X: ", X.shape)
 print("y: ", y.shape)
 
+
+print(X)
+print(y)
 # np.savetxt("split.csv", yTrain)
+
+data = readData(filename='testData.csv')
+xTest = createDesignMatrix(data)
+xTest = featureNormalize(xTest)
+
+yTest = createLabelVector(data)
+yTest = np.squeeze(np.asarray(yTest))
+yTest = to_categorical(yTest, num_classes=10)
+
+
+# In[24]:
+
+
+
 
 
 # Define the network
 model = Sequential()
-model.add(Dense(512, activation='relu', input_dim=X.shape[1]))
-model.add(Dropout(0.5))
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.5))
+
+model.add(Dense(256, activation='relu', input_dim=X.shape[1]))
+model.add(Dropout(0.3))
+
+# model.add(Dense(256, activation='relu'))
+# model.add(Dropout(0.3))
+
+
+# model.add(Dense(128, activation='relu'))
+# model.add(Dropout(0.3))
+
 model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.5))
+model.add(Dropout(0.3))
+
 model.add(Dense(NUM_CLASSES, activation='softmax'))
 
 # model.compile(optimizer='rmsprop', loss='mse', metrics=['accuracy'])
@@ -127,51 +165,50 @@ model.summary()
 pltCallBack = PlotLossAccuracy()
 
 
+# In[25]:
+
+
+
+
 accuracies = []
-for i in range(10):
-    xTrain, yTrain, xVal, yVal = splitAndOverSample(X, y, 10, i)
-    print("xTrain: ", xTrain.shape)
-    print("yTrain: ", yTrain.shape)
-    print("xVal: ", xVal.shape)
-    print("yVal: ", yVal.shape)
+# for i in range(10):
+# xTrain, yTrain, xVal, yVal = splitAndOverSample(X, y, 10, i)
+xTrain, yTrain, xVal, yVal = splitAndOverSample(X, y)
+print("xTrain: ", xTrain.shape)
+print("yTrain: ", yTrain.shape)
+print("xVal: ", xVal.shape)
+print("yVal: ", yVal.shape)
 
-    # Train the model
-    model.fit(xTrain, yTrain, validation_data=(xVal, yVal), epochs=20, callbacks=[pltCallBack])
-    # pltCallBack.show_plots()
-
-    # Predict the validation set
-    # predictions = model.predict(xVal)
-    # print("Predicter: ")
-    # print(predictions[0], "\n")
-
-    # Extract the predicted categories
-    # predictionCat = np.argmax(predictions, axis=1)
-    # print(predictionCat)
-
-    # Plot histogram of predicted category distribution
-    # plt.hist(predictionCat, bins=range(3, 11), align='left', rwidth=0.5)
-    # plt.show()
-
-    # print("Actual: ")
-    # print(yVal[0], "\n")
-
-    # evaluate the model
-    scores = model.evaluate(xVal, yVal)
-    accuracies.append(scores[1])
-    print(i, ": Accuracy = ", scores[1])
-
-print("Final accuracy: ", np.mean(accuracies))
-
-
-data = readData(filename='testData.csv')
-X = createDesignMatrix(data)
-xTest = featureNormalize(X)
-
-y = createLabelVector(data)
-y = np.squeeze(np.asarray(y))
-yTest = to_categorical(y, num_classes=10)
-
+# Train the model
+model.fit(xTrain, yTrain, validation_data=(xVal, yVal), epochs=150, callbacks=[pltCallBack])
 pltCallBack.show_plots()
+
+# Predict the validation set
+predictions = model.predict(xVal)
+# print("Predicter: ")
+# print(predictions[0], "\n")
+
+# Extract the predicted categories
+predictionCat = np.argmax(predictions, axis=1)
+print(predictionCat)
+
+# Plot histogram of predicted category distribution
+plt.hist(predictionCat, bins=range(3, 11), align='left', rwidth=0.5)
+plt.show()
+
+# print("Actual: ")
+# print(yVal[0], "\n")
+
+# evaluate the model
+scores = model.evaluate(xVal, yVal)
+print(": Validation Accuracy = ", scores[1])
+testScores = model.evaluate(xTest, yTest)
+print(": Test Accuracy = ", testScores[1])
+
+
+# In[26]:
+
 
 testScores = model.evaluate(xTest, yTest)
 print("Accuracy on Test set = ", testScores[1])
+

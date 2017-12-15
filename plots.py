@@ -22,8 +22,16 @@ numFeatures = points.shape[1]
 
 print(np.arange(np.min(classes), np.max(classes)+1))
 
+font = {'family' : 'normal',
+        'size'   : 22}
+
+plt.rc('font', **font)
+
 # Plot the distribution of classes
-plt.hist(classes, bins=np.arange(np.min(classes), np.max(classes)+1))
+plt.hist(classes, bins=np.arange(np.min(classes), np.max(classes)+2), rwidth=0.5, align="left")
+plt.legend()
+plt.xlabel("Quality")
+plt.ylabel("Frequency")
 plt.show()
 
 # Plot the rating vs each of the input features

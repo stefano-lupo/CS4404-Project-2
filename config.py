@@ -30,6 +30,24 @@ WHITE_WINE = dict(
 )
 
 
+# White Wine Dataset with feature engineering
+WHITE_WINE_OPT = dict(
+    FILE_NAME = "winequality-white.csv",
+    DELIMETER = ";",
+    FEATURES = ["volatile acidity", "chlorides", "density", "alcohol"],
+    OMIT_FEATURES = False,
+    LABEL = "quality"
+)
+
+
+WHITE_WINE_FULL = dict(
+    FILE_NAME = "winequality-white-full.csv",
+    DELIMETER = ";",
+    FEATURES = ["quality"],
+    OMIT_FEATURES = True,
+    LABEL = "quality"
+)
+
 ###########################################
 ####                 KNN            #######
 ###########################################
@@ -39,6 +57,6 @@ WHITE_WINE_KNN = dict(WHITE_WINE)
 # Select the dataset to be used by the algorithm
 # Be sure to sure to use the <>_KNN datasets when using K nearest neighbours 
 # then simply run `python <algorithm-script.py>` to get the results.
-ACTIVE_DATASET = WHITE_WINE
+ACTIVE_DATASET = WHITE_WINE_FULL
 
 
